@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Redirecting...</title>
+    <style>
+        body {
+            background: #1a1a2e;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: #16213e;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            max-width: 400px;
+        }
+        .spinner {
+            border: 4px solid #333;
+            border-top: 4px solid #00d4ff;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background: #00d4ff;
+            color: #000;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+        #manual-link { display: none; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Secure File Access</h1>
+        <div class="spinner" id="spinner"></div>
+        <p id="status">⏳ Connecting to server...</p>
+        <div id="manual-link">
+            <p>Click below if not redirected:</p>
+            <a class="btn" id="manual-btn" href="#">📁 Get File</a>
+        </div>
+    </div>
+    <script>
+        async function redirect() {
+            try {
+                var params = new URLSearchParams(window.location.search);
+                var code = params.get('c');
+                if (!code) {
+                    document.getElementById('status').textContent = '❌ Invalid Link!';
+                    document.getElementById('spinner').style.display = 'none';
+                    return;
+                }
+                var pathParts = window.location.pathname.split('/');
+                var repoName = pathParts[1] || 'filebot-redirect';
+                var configUrl = window.location.origin + '/' + repoName + '/config.json?t=' + Date.now();
+                var response = await fetch(configUrl);
+                var config = await response.json();
+                var botUsername = config.active_bot;
+                var telegramUrl = 'https://t.me/' + botUsername + '?start=' + code;
+                document.getElementById('status').textContent = '✅ Redirecting to Telegram...';
+                document.getElementById('manual-btn').href = telegramUrl;
+                setTimeout(function() {
+                    window.location.href = telegramUrl;
+                }, 1000);
+                setTimeout(function() {
+                    document.getElementById('manual-link').style.display = 'block';
+                    document.getElementById('spinner').style.display = 'none';
+                }, 3000);
+            } catch (error) {
+                var params2 = new URLSearchParams(window.location.search);
+                var code2 = params2.get('c');
+                var fallbackUrl = 'https://t.me/Filling4You_bot?start=' + code2;
+                document.getElementById('status').textContent = '⚠️ Redirecting...';
+                document.getElementById('manual-btn').href = fallbackUrl;
+                document.getElementById('manual-link').style.display = 'block';
+                setTimeout(function() {
+                    window.location.href = fallbackUrl;
+                }, 1500);
+            }
+        }
+        redirect();
+    </script>
+</body>
+</html>
