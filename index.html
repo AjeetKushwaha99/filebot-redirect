@@ -1,10 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>File Bot</title>
+    <title>Redirecting...</title>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get('code');
+        
+        if (code) {
+            // Fetch active bot from MongoDB API
+            // For now direct to primary bot
+            const PRIMARY_BOT = "Filling4You_bot";
+            const BACKUP_BOT = "FiLing4YoU_bot";
+            
+            // Try primary first
+            window.location.href = 
+                "https://t.me/" + PRIMARY_BOT + "?start=" + code;
+        } else {
+            document.body.innerHTML = "<h1>❌ Invalid Link</h1>";
+        }
+    </script>
 </head>
 <body>
-    <h1>✅ Bot is Active</h1>
-    <p>Use a valid file link to get your file.</p>
+    <h2>⏳ Redirecting to bot...</h2>
 </body>
 </html>
